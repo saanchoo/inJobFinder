@@ -30,7 +30,7 @@ scraper.click_show_all()
 job_cards = scraper.get_job_cards()
 
 jobs_data = []
-for job in job_cards[:4]: # Solo tomamos los primeros 5 jobs
+for job in job_cards[:20]: # Solo tomamos los primeros x jobs
     try:
         info = scraper.extract_job_info(job)
         jobs_data.append(info)

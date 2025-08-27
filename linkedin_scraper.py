@@ -33,14 +33,32 @@ class LinkedInScraper:
         )
         show_all_button.click()
         print("Click en Mostrar todo realizado")
-        time.sleep(2)
+        time.sleep(6)
         print("Espera después de click en Mostrar todo completada")
 
-    def get_job_cards(self):
-        # UL con las jobs cards (actualizado para la nueva estructura de LinkedIn)
-        all_cards = self.driver.find_elements(By.CSS_SELECTOR, "ul.BhfUEgJEYTGtIqejguYThjuDZXHk > li")
-        job_cards = [li for li in all_cards if li.find_elements(By.CSS_SELECTOR, "div.job-card-container")]
-        print(f"Se encontraron {len(job_cards)} tarjetas de trabajo con contenido")
+    def get_job_cards(self, max_jobs=20):
+        job_cards = []
+        seen_cards = set()
+
+        while len(job_cards) < max_jobs:
+            # Encontramos todas las tarjetas actualmente cargadas
+            current_cards = self.driver.find_elements(By.CSS_SELECTOR,
+                                                      "ul.BhfUEgJEYTGtIqejguYThjuDZXHk > li div.job-card-container")
+
+            for card in current_cards:
+                card_id = card.get_attribute("data-id") or card.text  # Identificador único
+                if card_id not in seen_cards:
+                    seen_cards.add(card_id)
+                    job_cards.append(card)
+                    print(f"Tarjeta añadida, total: {len(job_cards)}")
+                    if len(job_cards) >= max_jobs:
+                        break
+
+            # Scroll para cargar más tarjetas si no hemos llegado al máximo
+            self.driver.execute_script("arguments[0].scrollIntoView(true);", current_cards[-1])
+            time.sleep(2)  # Espera a que carguen más tarjetas
+
+        print(f"Se han cargado {len(job_cards)} tarjetas de trabajo")
         return job_cards
 
     def extract_job_info(self, job_card):
