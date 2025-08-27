@@ -1,0 +1,13 @@
+aiohttp==3.8.1
+beautifulsoup4==4.12.2
+certifi==2023.5.7
+charset-normalizer==3.1.0
+idna==3.4
+openai==0.28.0
+requests==2.31.0
+selenium==4.11.2
+soupsieve==2.4
+torch==2.0.1
+transformers==4.31.0
+urllib3==1.26.15
+webdriver-manager==3.8.6
