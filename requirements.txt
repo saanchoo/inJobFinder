@@ -8,6 +8,8 @@ requests==2.31.0
 selenium==4.11.2
 soupsieve==2.4
 torch==2.0.1
-transformers==4.31.0
+transformers~=4.55.4
 urllib3==1.26.15
-webdriver-manager==3.8.6
+webdriver-manager~=4.0.2
+python-dotenv~=1.0.1
+pandas~=2.2.3
