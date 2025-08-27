@@ -1,9 +1,10 @@
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from linkedin_scraper import LinkedInScraper
 from data_manager import DataManager
-from hface_handler import HuggingFaceHandler
+from gpt_handler import ChatGPTHandler
 import os
 from dotenv import load_dotenv
 
@@ -43,6 +44,6 @@ dm.save_jobs(jobs_data)
 # Cerrar el navegador
 driver.quit()
 
-# Evaluar los jobs usando HuggingFaceHandler
-huggingface = HuggingFaceHandler()
-dm.evaluate_jobs(huggingface)
+# Evaluar los jobs usando GPTHandler
+gpt_handler = ChatGPTHandler()
+dm.evaluate_jobs(gpt_handler)
