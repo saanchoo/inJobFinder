@@ -1,4 +1,3 @@
-
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -7,6 +6,8 @@ from data_manager import DataManager
 from gpt_handler import ChatGPTHandler
 import os
 from dotenv import load_dotenv
+
+from twilio_handler import TwilioHandler
 
 # Cargar credenciales desde .env
 load_dotenv()
@@ -30,7 +31,7 @@ scraper.click_show_all()
 job_cards = scraper.get_job_cards()
 
 jobs_data = []
-for job in job_cards[:20]: # Solo tomamos los primeros x jobs
+for job in job_cards[:10]: # Solo tomamos los primeros x jobs
     try:
         info = scraper.extract_job_info(job)
         jobs_data.append(info)
@@ -47,3 +48,7 @@ driver.quit()
 # Evaluar los jobs usando GPTHandler
 gpt_handler = ChatGPTHandler()
 dm.evaluate_jobs(gpt_handler)
+
+# Enviar por WhatsApp los jobs usando TwilioHandler
+# twilio_handler = TwilioHandler(jobs_list=jobs_data)
+# twilio_handler.send_jobs(max_jobs=5)

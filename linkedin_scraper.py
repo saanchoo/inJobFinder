@@ -1,6 +1,9 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
+
 
 class LinkedInScraper:
     def __init__(self, driver):
@@ -15,7 +18,7 @@ class LinkedInScraper:
         print("Contraseña ingresada")
         self.driver.find_element(By.ID, "password").send_keys(Keys.RETURN)
         print("Formulario enviado")
-        time.sleep(15)  # Esperamos a que cargue la página después de login
+        time.sleep(5)  # Esperamos a que cargue la página después de login
         print("Espera post-login completada")
 
     def go_to_jobs(self):
@@ -26,37 +29,37 @@ class LinkedInScraper:
         print("Espera después de ir a Empleos completada")
 
     def click_show_all(self):
-        time.sleep(2)
-        print("Esperando antes de hacer click en Mostrar todo")
-        show_all_button = self.driver.find_element(
-            By.XPATH, '//a[@aria-label="Mostrar todo Principales empleos que te recomendamos"]'
+        print("Esperando a que el botón 'Mostrar todo' esté disponible...")
+        # Buscamos el span con texto Mostrar todo y hacemos click en su padre
+        show_all_button = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//span[text()="Mostrar todo"]/parent::*'))
         )
         show_all_button.click()
-        print("Click en Mostrar todo realizado")
-        time.sleep(6)
-        print("Espera después de click en Mostrar todo completada")
+        print("Click en 'Mostrar todo' realizado")
+        time.sleep(5)  # Esperamos a que cargue la sección de ofertas
 
-    def get_job_cards(self, max_jobs=20):
+    def get_job_cards(self, max_jobs=10):
         job_cards = []
         seen_cards = set()
 
         while len(job_cards) < max_jobs:
-            # Encontramos todas las tarjetas actualmente cargadas
-            current_cards = self.driver.find_elements(By.CSS_SELECTOR,
-                                                      "ul.BhfUEgJEYTGtIqejguYThjuDZXHk > li div.job-card-container")
+            current_cards = self.driver.find_elements(By.CSS_SELECTOR, "div.job-card-list__entity-lockup")
 
             for card in current_cards:
-                card_id = card.get_attribute("data-id") or card.text  # Identificador único
+                card_id = card.get_attribute("id")
                 if card_id not in seen_cards:
                     seen_cards.add(card_id)
                     job_cards.append(card)
-                    print(f"Tarjeta añadida, total: {len(job_cards)}")
+                    print(f"Tarjeta añadida: {card_id}, total: {len(job_cards)}")
                     if len(job_cards) >= max_jobs:
                         break
 
-            # Scroll para cargar más tarjetas si no hemos llegado al máximo
+            if len(job_cards) >= max_jobs or not current_cards:
+                break
+
+            # Scroll al último card visible para cargar más
             self.driver.execute_script("arguments[0].scrollIntoView(true);", current_cards[-1])
-            time.sleep(2)  # Espera a que carguen más tarjetas
+            time.sleep(2)
 
         print(f"Se han cargado {len(job_cards)} tarjetas de trabajo")
         return job_cards
